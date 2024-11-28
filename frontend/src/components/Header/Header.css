@@ -47,7 +47,11 @@
 
 @media (max-width:750px) {
     .header-contents {
-        max-width: 70%;
+        max-width: 75%;
+    }
+
+    .header-contents h2 {
+        margin-bottom: 10px;
     }
 
     .header-contents p {
@@ -56,6 +60,17 @@
 
     .header-contents button {
         padding: 2vw 4vw;
+        font-size: max(1vw, 8px);
     }
 }
 
+@media (max-width: 400px) {
+    .header-contents {
+        top: 10%;
+    }
+
+    .header-contents h2 {
+        font-size: max(2.5vw, 18px);
+        margin-top: 10px;
+    }
+}
