@@ -6,7 +6,7 @@ import axios from "axios"
 import { toast } from 'react-toastify';
 
 const LoginPopup = ({ setShowLogin }) => {
-  const { url, setToken, setIsPopup } = useContext(StoreContext);
+  const { backendUrl, setToken, setIsPopup, setLoader } = useContext(StoreContext);
 
   const [currState, setCurrState] = new useState("Login");
   const [data, setData] = new useState({
@@ -26,7 +26,7 @@ const LoginPopup = ({ setShowLogin }) => {
 
   const sendOtp = async () => {
     try {
-      const response = await axios.post(url + "/api/v/sendOtp", { email });
+      const response = await axios.post(backendUrl + "/api/v/sendOtp", { email });
       if (response.data.success) {
         toast.success("OTP sent to your email");
       } else {
@@ -41,14 +41,18 @@ const LoginPopup = ({ setShowLogin }) => {
 
   const verifyOtp = async () => {
     try {
-      const response = await axios.post(url + "/api/v/verifyOtp", { email, otp });
+      setLoader(true);
+      const response = await axios.post(backendUrl + "/api/v/verifyOtp", { email, otp });
       if (response.data.success) {
         setToken(response.data.token)
         localStorage.setItem("token", response.data.token)
-        toast.success("Account verified, Logged in");
+        // toast.success("Account verified, Logged in");
         setIsPopup(false);
         setShowLogin(false)
         setStep(false);
+        setTimeout(() => {
+          setLoader(false);
+        }, 500)
       } else {
         toast.error(response.data.message);
       }
@@ -61,12 +65,11 @@ const LoginPopup = ({ setShowLogin }) => {
   const onLogin = async (evt) => {
     evt.preventDefault();
 
-    let newUrl = url;
-    newUrl += currState === "Login" ? "/api/user/login" : "/api/user/register";
+    let newbackendUrl = backendUrl;
+    newbackendUrl += currState === "Login" ? "/api/user/login" : "/api/user/register";
 
-    const response = await axios.post(newUrl, data);
-
-    console.log(response);
+    if (currState === "Login") setLoader(true);
+    const response = await axios.post(newbackendUrl, data);
     if (response.data.success) {
       if (currState !== "Login") {
         setStep(true);
@@ -76,10 +79,8 @@ const LoginPopup = ({ setShowLogin }) => {
         localStorage.setItem("token", response.data.token)
         setIsPopup(false);
         setShowLogin(false)
+        if (currState === "Login") setLoader(false);
       }
-      console.log("mai");
-    } else {
-      console.log("mai yaha ku hu");
     }
   }
 
@@ -96,11 +97,13 @@ const LoginPopup = ({ setShowLogin }) => {
       {
 
         step ?
-          <div className='login-popup-inputs'>
-            <h3 className='login-popup-title'>Enter the OTP sent to your email</h3>
-            <input type="text" name='otp' value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP" required />
-            <p onClick={getBackHandler}>Want to Change Email ?</p>
-            <button onClick={verifyOtp}>Verify OTP</button>
+          <div className='login-popup-container'>
+            <div className='login-popup-inputs'>
+              <h3 className='login-popup-title'>Enter the OTP sent to your email</h3>
+              <input type="text" name='otp' value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="OTP" required />
+              <p onClick={getBackHandler}>Want to Change Email ?</p>
+              <button onClick={verifyOtp}>Verify OTP</button>
+            </div>
           </div> :
           <form onSubmit={onLogin} className='login-popup-container'>
 

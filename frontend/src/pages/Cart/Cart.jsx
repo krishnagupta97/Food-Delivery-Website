@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const Cart = () => {
-  const { cartItems, food_list, removeFromCart, getTotalCartAmount, url } = useContext(StoreContext);
+  const { cartItems, food_list, removeFromCart, getTotalCartAmount, backendUrl } = useContext(StoreContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const Cart = () => {
             return (
               <div key={idx}>
                 <div className='cart-items-title cart-items-item'>
-                  <img src={url + "/images/" + item.image} alt="" />
+                  <img src={backendUrl + "/images/" + item.image} alt="" />
                   <p>{item.name}</p>
                   <p>${item.price}</p>
                   <p>{cartItems[item._id]}</p>

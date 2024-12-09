@@ -25,7 +25,7 @@ const placeOrder = async (req, res) => {
         })
 
         const options = {
-            amount: req.body.amount * 100,
+            amount: req.body.amount * 100 * 8,
             currency: "INR",
             receipt: crypto.randomBytes(10).toString("hex"),
         }

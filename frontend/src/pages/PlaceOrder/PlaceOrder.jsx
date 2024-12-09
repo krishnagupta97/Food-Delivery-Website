@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom"
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, cartItems, food_list, url } = useContext(StoreContext);
+  const { getTotalCartAmount, token, cartItems, food_list, backendUrl } = useContext(StoreContext);
 
   const [data, setData] = useState({
     firstName: "",
@@ -41,7 +41,7 @@ const PlaceOrder = () => {
             amount: getTotalCartAmount() + 2,
         };
 
-        const response = await axios.post(`${url}/api/order/place`, orderData, {
+        const response = await axios.post(`${backendUrl}/api/order/place`, orderData, {
             headers: { token },
         });
 
@@ -57,7 +57,7 @@ const PlaceOrder = () => {
                 order_id: id,
                 handler: async function (response) {
                     try {
-                        await axios.post(`${url}/api/order/verify`, {
+                        await axios.post(`${backendUrl}/api/order/verify`, {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,

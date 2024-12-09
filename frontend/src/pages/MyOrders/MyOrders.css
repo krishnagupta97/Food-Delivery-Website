@@ -43,6 +43,12 @@
     color: #454545;
 }
 
+.default-order-text {
+    padding: 20px 10px;
+    border-left: 2px solid blue;
+    margin-bottom: 80px;
+}
+
 @media (max-width: 900px) {
     .my-orders-order {
         grid-template-columns: 1fr 1fr 1fr;
