@@ -45,7 +45,7 @@ const LoginPopup = ({ setShowLogin }) => {
       if (response.data.success) {
         setToken(response.data.token)
         localStorage.setItem("token", response.data.token)
-        toast.success("Account verified, Logged in");
+        // toast.success("Account verified, Logged in");
         setIsPopup(false);
         setShowLogin(false)
         setStep(false);
