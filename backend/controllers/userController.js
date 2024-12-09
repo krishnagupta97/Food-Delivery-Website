@@ -8,49 +8,49 @@ import validator from "validator"
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await userModel.findOne({email});
+        const user = await userModel.findOne({ email });
 
-        if(!user) {
-            return res.json({success: false, message: "User doesn't exists"})
+        if (!user) {
+            return res.json({ success: false, message: "User doesn't exists" })
         }
-    
+
         const isMatch = await bcrypt.compare(password, user.password);
-    
-        if(!isMatch) {
-            return res.json({success: false, message: "Wrong Password Entered"});
+
+        if (!isMatch) {
+            return res.json({ success: false, message: "Wrong Password Entered" });
         }
 
         const token = createToken(user._id);
-        return res.json({success: true, token});
+        return res.json({ success: true, token });
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "Error"});
+        res.json({ success: false, message: "error" });
     }
 }
 
-const createToken = (id) => {
-    return jwt.sign({id},process.env.JWT_SECRET)
+export const createToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET)
 }
 
 // register user
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     try {
-        const exists = await userModel.findOne({email})
+        const exists = await userModel.findOne({ email })
 
         // checking if user already exists
-        if(exists) {
-            return res.json({success: false, message: "User Already Exists"}); 
+        if (exists) {
+            return res.json({ success: false, message: "User Already Exists" });
         }
 
         // checking email format
-        if(!validator.isEmail(email)) {
-            return res.json({success: false, message: "Please enter a valid email"})
+        if (!validator.isEmail(email)) {
+            return res.json({ success: false, message: "Please enter a valid email" })
         }
 
         // checking for strong password
-        if(password.length < 8) {
-            return res.json({success: false, message: "Enter a valid password"})
+        if (password.length < 8) {
+            return res.json({ success: false, message: "Enter a valid password" })
         }
 
         // hashing user password
@@ -64,11 +64,11 @@ const registerUser = async (req, res) => {
 
         const user = await newUser.save();
         const token = createToken(user._id);
-        res.send({success: true, token})
+        res.send({ success: true, message: "Kindly Verify Your Account" });
     } catch (error) {
         console.log(error);
-        res.send({success: false, message: "Error"});
+        res.send({ success: false, message: "Signup Error" });
     }
 }
 
-export {loginUser, registerUser}
+export { loginUser, registerUser }

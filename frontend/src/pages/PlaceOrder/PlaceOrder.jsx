@@ -20,40 +20,78 @@ const PlaceOrder = () => {
   })
 
   const onChangeHandler = (e) => {
-    setData(pre => ({...pre, [e.target.name]: e.target.value}));
+    setData(pre => ({ ...pre, [e.target.name]: e.target.value }));
   }
 
   const placeOrder = async (evt) => {
     evt.preventDefault();
-    let orderItems = [];
-    food_list.map(item => {
-      if(cartItems[item._id] > 0) {
-        let itemInfo = item;
-        itemInfo["quantity"] = cartItems[item._id]
-        orderItems.push(itemInfo)
-      }
-    })
+    try {
+        let orderItems = [];
+        food_list.forEach(item => {
+            if (cartItems[item._id] > 0) {
+                let itemInfo = { ...item, quantity: cartItems[item._id] };
+                orderItems.push(itemInfo);
+            }
+        });
 
-    let orderData = {
-      address: data,
-      items: orderItems,
-      amount: getTotalCartAmount() + 2
+        let orderData = {
+            userId: token.userId,
+            address: data,
+            items: orderItems,
+            amount: getTotalCartAmount() + 2,
+        };
+
+        const response = await axios.post(`${url}/api/order/place`, orderData, {
+            headers: { token },
+        });
+
+        // dummy card :=   5267 3181 8797 5449
+        if (response.data.success) {
+            const { id, amount } = response.data.data; // Razorpay orderId and amount
+            const options = {
+                key: "rzp_test_GDetf72h7NEXpM",
+                amount,
+                currency: "INR",
+                name: "FoodieFrizzy",
+                description: "Order Payment",
+                order_id: id,
+                handler: async function (response) {
+                    try {
+                        await axios.post(`${url}/api/order/verify`, {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                        });
+                        window.location.href = "http://localhost:5174/myorders";
+                    } catch (err) {
+                        alert("Payment verification failed");
+                        console.error(err);
+                    }
+                },
+                prefill: {
+                    name: `${data.firstName} ${data.lastName}`,
+                    email: data.email,
+                    contact: data.phone,
+                },
+                theme: {
+                    color: "#F37254",
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+        } else {
+            alert("Error placing the order");
+        }
+    } catch (err) {
+        alert("Failed to connect to the server");
+        console.error(err);
     }
-
-    const response = await axios.post(url + "/api/order/place", orderData, {headers: { token }});
-    if (response.data.success) {
-      //8:22:50
-      const {session_url} = response.data;
-      window.location.replace(session_url);
-    } else {
-      alert("Error");
-    }
-  }
-
+};
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(!token || getTotalCartAmount() === 0) {
+    if (!token || getTotalCartAmount() === 0) {
       navigate("/cart");
     }
   }, [token])

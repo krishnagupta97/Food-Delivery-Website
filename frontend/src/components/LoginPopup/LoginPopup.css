@@ -44,6 +44,10 @@
     gap: 20px;
 }
 
+.login-popup-inputs p{
+    cursor: pointer;
+}
+
 .login-popup-inputs input {
     border: 1px solid #c9c9c9;
     outline: none;

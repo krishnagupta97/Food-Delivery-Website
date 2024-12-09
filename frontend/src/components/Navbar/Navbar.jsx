@@ -17,7 +17,7 @@ const Navbar = ({ setShowLogin }) => {
         toast.success("Successfully, Logged out!!!")
         localStorage.removeItem("token")
         setToken("")
-        isPopup(false);
+        setIsPopup(false);
         navigate("/")
     }
 
